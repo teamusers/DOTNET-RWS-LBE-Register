@@ -62,9 +62,16 @@ namespace RWS_LBE_Register.Controllers
                     });
             var secretKey = channel.AppKey;
 
+            if (string.IsNullOrWhiteSpace(req.Nonce) || string.IsNullOrWhiteSpace(req.Timestamp))
+            {
+                return BadRequest(
+                    ApiResponse.InvalidRequestBodyErrorResponse()
+                );
+            }
+
             // 4) Compute our own signature
             var computed = _authService
-                .GenerateSignatureWithParams(appId, req.Nonce, req.Timestamp, secretKey);
+                .GenerateSignatureWithParams(appId, req.Nonce, req.Timestamp, secretKey!);
 
             // 5) Compare signatures
             if (computed.Signature != req.Signature)
