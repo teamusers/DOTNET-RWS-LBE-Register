@@ -21,6 +21,9 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
+// Log incoming requests
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 //Conditionally run the JWT middleware for "/api/v1/user/**" only
 var apiPrefix = "/api/v1/";
 var protectedPrefixes = new[]
