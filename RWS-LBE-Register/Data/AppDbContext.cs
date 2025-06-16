@@ -9,5 +9,11 @@ namespace RWS_LBE_Register.Data
             : base(options) { }
          
         public DbSet<SysChannel> SysChannel { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); 
+        }
     }
 }
