@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using RWS_LBE_Register.Data;
 using RWS_LBE_Register.Services;
-using RWS_LBE_Register.Services.Authentication;
+using RWS_LBE_Register.Services.Implementations;
+using RWS_LBE_Register.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
+// Register HTTP Client Factory (required for injecting HttpClient)
+builder.Services.AddHttpClient();
+builder.Services.Configure<CiamSettings>(builder.Configuration.GetSection("Api:Eeid"));
+builder.Services.AddSingleton<CiamService>(); 
+
+// Add OTP service
+builder.Services.AddScoped<IOtpService, OTPService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -18,7 +27,13 @@ builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddScoped<IOtpService, OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.Configure<AcsSettings>(
+    builder.Configuration.GetSection("Api:Acs")); 
+// Register the AcsService with HttpClient support
+builder.Services.AddHttpClient<AcsService>();
 var app = builder.Build();
 
 // Log incoming requests
@@ -63,8 +78,7 @@ try
 catch
 {
     throw new InvalidOperationException("Jwt:Secret must be a Base64-encoded string");
-}
-
+} 
 // Auto-migrate DB on startup
 using (var scope = app.Services.CreateScope())
 {
@@ -72,14 +86,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate(); // This applies any pending migrations
 }
 
-TokenInterceptor.SetJwtSecret(keyBytes);
-
-app.UseHttpsRedirection();
-
-app.UseMiddleware<AuditLogMiddleware>(); 
-
-app.UseAuthorization();
-
-app.MapControllers();
-
+TokenInterceptor.SetJwtSecret(keyBytes);  
+app.UseHttpsRedirection(); 
+app.UseMiddleware<AuditLogMiddleware>();  
+app.UseAuthorization(); 
+app.MapControllers(); 
 app.Run();
