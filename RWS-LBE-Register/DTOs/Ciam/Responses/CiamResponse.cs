@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RWS_LBE_Register.DTOs.CiamResponses
+namespace RWS_LBE_Register.DTOs.Ciam.CiamResponses
 {
     public static class CiamErrorMessages
     {

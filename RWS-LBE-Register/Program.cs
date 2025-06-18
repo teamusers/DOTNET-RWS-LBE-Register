@@ -3,6 +3,9 @@ using RWS_LBE_Register.Data;
 using RWS_LBE_Register.Services;
 using RWS_LBE_Register.Services.Implementations;
 using RWS_LBE_Register.Services.Interfaces;
+using RWS_LBE_Register.Helpers;
+using RWS_LBE_Register.Settings;
+using RWS_LBE_Register.DTOs.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +18,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Register HTTP Client Factory (required for injecting HttpClient)
 builder.Services.AddHttpClient();
 builder.Services.Configure<CiamSettings>(builder.Configuration.GetSection("Api:Eeid"));
-builder.Services.AddSingleton<CiamService>(); 
+builder.Services.AddSingleton<CiamService>();
+
+builder.Services.Configure<RlpNumberingOptions>(
+    builder.Configuration.GetSection("Application:RLPNumberingFormat"));
+ 
+builder.Services.Configure<RlpApiConfig>(
+    builder.Configuration.GetSection("ExternalApiConfig:RlpApiConfig"));
 
 // Add OTP service
 builder.Services.AddScoped<IOtpService, OTPService>();
@@ -29,6 +38,15 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IOtpService, OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRlpService, RlpService>();
+builder.Services.AddScoped<RlpNumberingHelper>();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new DateOnlyConverter());
+});
+
+
 
 builder.Services.Configure<AcsSettings>(
     builder.Configuration.GetSection("Api:Acs")); 

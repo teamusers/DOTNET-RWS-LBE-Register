@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization; 
+using System.Text.Json.Serialization;
+
 namespace RWS_LBE_Register.Common;
 
 /// <summary>
@@ -69,7 +70,16 @@ public static class ResponseTemplate
         DefaultResponse(Codes.INVALID_GR_MEMBER_CLASS, "invalid gr member class provided");
 
     public static ApiResponse CachedProfileNotFoundErrorResponse() =>
-        DefaultResponse(Codes.CACHED_PROFILE_NOT_FOUND, "cached profile not found"); 
+        DefaultResponse(Codes.CACHED_PROFILE_NOT_FOUND, "cached profile not found");
+
+    public static ApiResponse NewUserPasswordComplexityInvalidErrorResponse() =>
+        DefaultResponse(Codes.PASSWORD_COMPLEXITY_INVALID, "new user password complexity is invalid");
+
+    public static ApiResponse UnmappedCIAMErrorResponse(object? ciamErrorResponse) =>
+        new ApiResponse { Code = Codes.CIAM_UNMAPPED_ERROR, Message = "unmapped CIAM error encountered", Data = ciamErrorResponse };
+
+    public static ApiResponse UnmappedRLPErrorResponse(object? rlpErrorResponse) =>
+        new ApiResponse { Code = Codes.RLP_UNMAPPED_ERROR, Message = "unmapped RLP error encountered", Data = rlpErrorResponse };
 }
 
 public class ApiException

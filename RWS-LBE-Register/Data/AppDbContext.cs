@@ -11,6 +11,8 @@ namespace RWS_LBE_Register.Data
         public DbSet<SysChannel> SysChannel { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
 
+        public DbSet<RLPUserNumbering> RLPUserNumbering { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); 

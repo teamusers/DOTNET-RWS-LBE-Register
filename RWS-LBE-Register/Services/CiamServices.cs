@@ -4,8 +4,8 @@ using System.Text.Json;
 using System.Web;
 using Microsoft.Extensions.Options;
 using System.Net;
-using RWS_LBE_Register.DTOs.Requests; 
-using RWS_LBE_Register.DTOs.CiamResponses;
+using RWS_LBE_Register.DTOs.Ciam.Requests; 
+using RWS_LBE_Register.DTOs.Ciam.CiamResponses;
 
 namespace RWS_LBE_Register.Services
 {
@@ -17,12 +17,15 @@ namespace RWS_LBE_Register.Services
         public string ClientID { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
         public string UserIdLinkExtensionKey { get; set; } = string.Empty;
+        public string DefaultIssuer { get; set; } = string.Empty;
     }
 
     public class CiamService
     {
         private readonly HttpClient _client;
         private readonly CiamSettings _settings;
+        public string DefaultIssuer => _settings.DefaultIssuer;
+        public string UserIdLinkExtensionKey => _settings.UserIdLinkExtensionKey;
 
         public CiamService(HttpClient client, IOptions<CiamSettings> settings)
         {

@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Serialization; 
-namespace RWS_LBE_Register.DTOs.Requests
+﻿using System.Text.Json.Serialization;
+using RWS_LBE_Register.DTOs.User.Shared;
+namespace RWS_LBE_Register.DTOs.Ciam.Requests
 {
     public class Identity
     {
@@ -66,4 +67,35 @@ namespace RWS_LBE_Register.DTOs.Requests
         [JsonPropertyName("grid")]
         public string GrId { get; set; } = string.Empty;
     }
+
+    public static class GraphUserRequestBuilder
+    {
+        public static GraphCreateUserRequest GenerateInitialRegistrationRequest(UserDto user, string defaultIssuer)
+        {
+            return new GraphCreateUserRequest
+            {
+                AccountEnabled = true,
+                DisplayName = $"{user.FirstName} {user.LastName}",
+                MailNickname = user.Email?.Split('@')[0] ?? string.Empty,
+                Mail = user.Email ?? string.Empty,
+                UserType = "Guest",
+                PasswordPolicies = "DisablePasswordExpiration",
+                PasswordProfile = new PasswordProfile
+                {
+                    ForceChangePasswordNextSignIn = false,
+                    Password = user.Password ?? "Password123!"
+                },
+                Identities = new List<Identity>
+            {
+                new Identity
+                {
+                    SignInType = "emailAddress",
+                    Issuer = defaultIssuer,
+                    IssuerAssignedID = user.Email ?? string.Empty
+                }
+            }
+            };
+        }
+    }
+
 }

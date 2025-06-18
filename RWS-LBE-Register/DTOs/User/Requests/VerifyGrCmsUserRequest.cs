@@ -1,42 +1,52 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using RWS_LBE_Register.DTOs.User.Shared;
 
 namespace RWS_LBE_Register.DTOs.User.Requests
 {
-    public class VerifyGrCmsUserRequest
+    public class VerifyGrCmsUserRequest : IValidatableObject
     {
         [Required]
+        [JsonPropertyName("user")]
         public UserDto User { get; set; } = new();
 
-        public IEnumerable<ValidationResult> Validate()
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
 
             if (User?.GrProfile == null)
-                results.Add(new ValidationResult("gr_profile is required"));
+                results.Add(new ValidationResult("gr_profile is required", new[] { "user.gr_profile" }));
             else
             {
                 if (string.IsNullOrEmpty(User.GrProfile.Id))
-                    results.Add(new ValidationResult("gr_profile.id is required"));
+                    results.Add(new ValidationResult("gr_profile.id is required", new[] { "user.gr_profile.id" }));
 
                 if (string.IsNullOrEmpty(User.GrProfile.Class))
-                    results.Add(new ValidationResult("gr_profile.class is required"));
+                    results.Add(new ValidationResult("gr_profile.class is required", new[] { "user.gr_profile.class" }));
             }
 
             if (string.IsNullOrEmpty(User?.Email))
-                results.Add(new ValidationResult("user.email is required"));
+                results.Add(new ValidationResult("user.email is required", new[] { "user.email" }));
+
             if (string.IsNullOrEmpty(User?.FirstName))
-                results.Add(new ValidationResult("user.first_name is required"));
+                results.Add(new ValidationResult("user.first_name is required", new[] { "user.first_name" }));
+
             if (string.IsNullOrEmpty(User?.LastName))
-                results.Add(new ValidationResult("user.last_name is required"));
-            if (User?.DateOfBirth == null)
-                results.Add(new ValidationResult("user.dob is required"));
+                results.Add(new ValidationResult("user.last_name is required", new[] { "user.last_name" }));
+
+            if (User?.Dob == null)
+                results.Add(new ValidationResult("user.dob is required", new[] { "user.dob" }));
+
             if (User?.PhoneNumbers == null || User.PhoneNumbers.Count == 0 || string.IsNullOrEmpty(User.PhoneNumbers[0].PhoneNumber))
-                results.Add(new ValidationResult("user.phone_numbers must be properly populated"));
+                results.Add(new ValidationResult("user.phone_numbers must be properly populated", new[] { "user.phone_numbers" }));
+
             if (string.IsNullOrEmpty(User?.UserProfile?.CountryCode))
-                results.Add(new ValidationResult("user.user_profile.country_code is required"));
+                results.Add(new ValidationResult("user.user_profile.country_code is required", new[] { "user.user_profile.country_code" }));
+
             if (string.IsNullOrEmpty(User?.UserProfile?.CountryName))
-                results.Add(new ValidationResult("user.user_profile.country_name is required"));
+                results.Add(new ValidationResult("user.user_profile.country_name is required", new[] { "user.user_profile.country_name" }));
 
             return results;
         }
