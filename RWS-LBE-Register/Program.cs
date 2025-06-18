@@ -5,7 +5,7 @@ using RWS_LBE_Register.Services.Implementations;
 using RWS_LBE_Register.Services.Interfaces;
 using RWS_LBE_Register.Helpers;
 using RWS_LBE_Register.Settings;
-using RWS_LBE_Register.DTOs.Configurations;
+using RWS_LBE_Register.DTOs.Configurations; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +31,7 @@ builder.Services.AddScoped<IOtpService, OTPService>();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer(); 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

@@ -9,6 +9,7 @@ namespace RWS_LBE_Register.DTOs.User.Shared
         public string? Email { get; set; }
 
         [JsonPropertyName("password")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Password { get; set; }
 
         [JsonPropertyName("identifiers")]
@@ -52,9 +53,11 @@ namespace RWS_LBE_Register.DTOs.User.Shared
         public UserProfileDto UserProfile { get; set; } = new();
 
         [JsonPropertyName("gr_profile")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public GrProfileDto GrProfile { get; set; } = new();
 
         [JsonPropertyName("employee_id")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? EmployeeId { get; set; }
     }
 }

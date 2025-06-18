@@ -11,7 +11,7 @@ namespace RWS_LBE_Register.DTOs.User.Shared
         [JsonPropertyName("iu_number")]
         public string? IuNumber { get; set; }
 
-        [JsonPropertyName("issg")]
+        [JsonPropertyName("is_sg")]
         public bool? Issg { get; set; }
 
         [JsonPropertyName("last_updated")]
