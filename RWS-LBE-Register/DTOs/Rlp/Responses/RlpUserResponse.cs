@@ -82,7 +82,7 @@ namespace RWS_LBE_Register.DTOs.Rlp.Responses
         public bool Suspended { get; set; }
 
         [JsonPropertyName("updated_at")]
-        [JsonConverter(typeof(DateTimeConverter))] 
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime? UpdatedAt { get; set; }
 
         [JsonPropertyName("phone_numbers")]

@@ -7,7 +7,7 @@ namespace RWS_LBE_Register.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
-         
+
         public DbSet<SysChannel> SysChannel { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
 
@@ -15,7 +15,7 @@ namespace RWS_LBE_Register.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

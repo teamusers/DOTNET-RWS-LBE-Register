@@ -1,11 +1,11 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json; 
+using System.Text.Json;
 using System.Web;
 using Microsoft.Extensions.Options;
-using System.Net;
-using RWS_LBE_Register.DTOs.Ciam.Requests; 
 using RWS_LBE_Register.DTOs.Ciam.CiamResponses;
+using RWS_LBE_Register.DTOs.Ciam.Requests;
 
 namespace RWS_LBE_Register.Services
 {

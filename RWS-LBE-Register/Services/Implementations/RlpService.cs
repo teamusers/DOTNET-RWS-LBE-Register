@@ -1,14 +1,12 @@
-﻿using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using RWS_LBE_Register.Common;
+using RWS_LBE_Register.DTOs.Configurations;
 using RWS_LBE_Register.DTOs.Rlp.Requests;
 using RWS_LBE_Register.DTOs.Rlp.Responses;
 using RWS_LBE_Register.Services.Interfaces;
-using RWS_LBE_Register.DTOs.Configurations;
-using Microsoft.AspNetCore.Mvc;
-using RWS_LBE_Register.Common;
 
 namespace RWS_LBE_Register.Services.Implementations
 {
@@ -103,7 +101,7 @@ namespace RWS_LBE_Register.Services.Implementations
 
                 if (payload != null)
                 {
-                    var json = JsonSerializer.Serialize(payload); 
+                    var json = JsonSerializer.Serialize(payload);
                     request.Content = new StringContent(json, Encoding.UTF8, "application/json");
                 }
 

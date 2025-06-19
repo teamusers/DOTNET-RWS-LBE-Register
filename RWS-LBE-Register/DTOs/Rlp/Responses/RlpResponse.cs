@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using RWS_LBE_Register.DTOs.User.Shared;
 namespace RWS_LBE_Register.DTOs.Rlp.Responses
 {
     public static class RlpErrorCodes

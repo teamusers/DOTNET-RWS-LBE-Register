@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Register.DTOs.User.Shared
 {
@@ -15,7 +14,7 @@ namespace RWS_LBE_Register.DTOs.User.Shared
 
         [JsonPropertyName("preference_flags")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<string>? PreferenceFlags { get; set; } 
+        public List<string>? PreferenceFlags { get; set; }
 
         [JsonPropertyName("verified_ownership")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

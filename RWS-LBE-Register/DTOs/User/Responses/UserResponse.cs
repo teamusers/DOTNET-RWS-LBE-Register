@@ -1,6 +1,6 @@
-﻿using RWS_LBE_Register.Helpers;
-using System.Text.Json.Serialization;
-using RWS_LBE_Register.DTOs.User.Shared; 
+﻿using System.Text.Json.Serialization;
+using RWS_LBE_Register.DTOs.User.Shared;
+using RWS_LBE_Register.Helpers;
 
 namespace RWS_LBE_Register.DTOs.User.Responses
 {

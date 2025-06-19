@@ -1,6 +1,6 @@
-﻿using RWS_LBE_Register.Helpers;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using RWS_LBE_Register.DTOs.User.Shared;
+using RWS_LBE_Register.Helpers;
 
 namespace RWS_LBE_Register.DTOs.Rlp.Requests
 {
@@ -81,7 +81,7 @@ namespace RWS_LBE_Register.DTOs.Rlp.Requests
 
         [JsonPropertyName("phone_numbers")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public List<PhoneNumberDto>? PhoneNumbers { get; set; } 
+        public List<PhoneNumberDto>? PhoneNumbers { get; set; }
 
         [JsonPropertyName("referral")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -89,7 +89,7 @@ namespace RWS_LBE_Register.DTOs.Rlp.Requests
 
         [JsonPropertyName("user_profile")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public UserProfileDto? UserProfile { get; set; } 
+        public UserProfileDto? UserProfile { get; set; }
 
         public void PopulateRegistrationDefaults(string rlpId)
         {

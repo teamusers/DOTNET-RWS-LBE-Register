@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using RWS_LBE_Register.Data;
+using RWS_LBE_Register.DTOs.Configurations;
+using RWS_LBE_Register.Helpers;
 using RWS_LBE_Register.Services;
 using RWS_LBE_Register.Services.Implementations;
 using RWS_LBE_Register.Services.Interfaces;
-using RWS_LBE_Register.Helpers;
 using RWS_LBE_Register.Settings;
-using RWS_LBE_Register.DTOs.Configurations; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,7 @@ builder.Services.AddSingleton<CiamService>();
 
 builder.Services.Configure<RlpNumberingOptions>(
     builder.Configuration.GetSection("Application:RLPNumberingFormat"));
- 
+
 builder.Services.Configure<RlpApiConfig>(
     builder.Configuration.GetSection("ExternalApiConfig:RlpApiConfig"));
 
@@ -31,8 +31,8 @@ builder.Services.AddScoped<IOtpService, OTPService>();
 
 // Add services to the container.
 
-builder.Services.AddControllers(); 
-builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -49,7 +49,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 
 builder.Services.Configure<AcsSettings>(
-    builder.Configuration.GetSection("Api:Acs")); 
+    builder.Configuration.GetSection("Api:Acs"));
 // Register the AcsService with HttpClient support
 builder.Services.AddHttpClient<AcsService>();
 var app = builder.Build();
@@ -61,7 +61,7 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 var apiPrefix = "/api/v1/";
 var protectedPrefixes = new[]
 {
-    apiPrefix + "user" 
+    apiPrefix + "user"
 };
 
 app.UseWhen(
@@ -96,7 +96,7 @@ try
 catch
 {
     throw new InvalidOperationException("Jwt:Secret must be a Base64-encoded string");
-} 
+}
 // Auto-migrate DB on startup
 using (var scope = app.Services.CreateScope())
 {
@@ -104,9 +104,9 @@ using (var scope = app.Services.CreateScope())
     db.Database.Migrate(); // This applies any pending migrations
 }
 
-TokenInterceptor.SetJwtSecret(keyBytes);  
-app.UseHttpsRedirection(); 
-app.UseMiddleware<AuditLogMiddleware>();  
-app.UseAuthorization(); 
-app.MapControllers(); 
+TokenInterceptor.SetJwtSecret(keyBytes);
+app.UseHttpsRedirection();
+app.UseMiddleware<AuditLogMiddleware>();
+app.UseAuthorization();
+app.MapControllers();
 app.Run();

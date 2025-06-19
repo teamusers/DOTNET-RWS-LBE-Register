@@ -4,7 +4,7 @@
     {
         public string RetailerId { get; set; } = string.Empty;
         public RlpCoreConfig Core { get; set; } = new();
-        public RlpOffersConfig Offers { get; set; } = new(); 
+        public RlpOffersConfig Offers { get; set; } = new();
         public RlpEventConfig Events { get; set; } = new();
     }
 

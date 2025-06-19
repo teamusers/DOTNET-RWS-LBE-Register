@@ -1,6 +1,6 @@
-﻿using RWS_LBE_Register.DTOs.User.Shared;
+﻿using RWS_LBE_Register.DTOs.Rlp.Requests;
 using RWS_LBE_Register.DTOs.Rlp.Responses;
-using RWS_LBE_Register.DTOs.Rlp.Requests;
+using RWS_LBE_Register.DTOs.User.Shared;
 public static class UserMapper
 {
     public static RlpUserRequest MapLbeToRlpUser(UserDto user)

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using RWS_LBE_Register.DTOs.User.Shared; 
+using RWS_LBE_Register.DTOs.User.Shared;
 
 namespace RWS_LBE_Register.DTOs.Requests
 {
@@ -11,7 +11,7 @@ namespace RWS_LBE_Register.DTOs.Requests
     }
 
     public class GetUserIdExtensions
-    { 
+    {
         [JsonPropertyName("email")]
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]

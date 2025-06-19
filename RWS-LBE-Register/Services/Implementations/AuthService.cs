@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using RWS_LBE_Register.DTOs.Auth.Requests;
 using RWS_LBE_Register.Services.Interfaces;

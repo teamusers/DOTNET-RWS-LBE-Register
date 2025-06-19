@@ -7,7 +7,7 @@ namespace RWS_LBE_Register.Services.Implementations
         public string? OtpCode { get; set; }
         public long OtpExpiry { get; set; }
     }
-     
+
 
     // Simple implementation without Redis or validation
     public class OTPService : IOtpService

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using RWS_LBE_Register.Common;
+﻿using RWS_LBE_Register.Common;
 using RWS_LBE_Register.DTOs.Rlp.Requests;
 using RWS_LBE_Register.DTOs.Rlp.Responses;
 

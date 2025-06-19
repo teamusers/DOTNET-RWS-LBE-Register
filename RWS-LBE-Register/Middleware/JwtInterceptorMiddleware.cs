@@ -1,6 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt; 
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using RWS_LBE_Register.Common; 
+using RWS_LBE_Register.Common;
 
 public class JwtInterceptorMiddleware
 {

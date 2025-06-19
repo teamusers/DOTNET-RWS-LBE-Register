@@ -1,18 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Register.Common;
 using RWS_LBE_Register.DTOs.Acs.Requests;
-using RWS_LBE_Register.DTOs.Extensions;
-using RWS_LBE_Register.DTOs.User.Requests; 
-using RWS_LBE_Register.DTOs.Rlp.Requests;
 using RWS_LBE_Register.DTOs.Ciam.Requests;
+using RWS_LBE_Register.DTOs.Extensions;
+using RWS_LBE_Register.DTOs.Rlp.Requests;
+using RWS_LBE_Register.DTOs.User.Requests;
 using RWS_LBE_Register.DTOs.User.Responses;
+using RWS_LBE_Register.Helpers;
 using RWS_LBE_Register.Services;
-using RWS_LBE_Register.Services.Interfaces;
-using RWS_LBE_Register.Helpers; 
-using System.Net;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json.Linq;
 using RWS_LBE_Register.Services.Implementations;
+using RWS_LBE_Register.Services.Interfaces;
 
 namespace RWS_LBE_Register.Controllers
 {
@@ -87,7 +86,7 @@ namespace RWS_LBE_Register.Controllers
             {
                 _logger.LogError("Failed to send OTP email. Code: {Code}, Message: {Message}",
                     sendResult.Code, sendResult.Message);
-            } 
+            }
             return Ok(ResponseTemplate.GenericSuccessResponse(otp));
         }
 
@@ -165,7 +164,7 @@ namespace RWS_LBE_Register.Controllers
             if (initErr != null)
             {
                 var errorResponse = _rlpService.HandleRlpError(initRaw);
-                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse); 
+                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse);
             }
 
             var updateReq = new UserProfileRequest { User = rlpUser };
@@ -197,12 +196,12 @@ namespace RWS_LBE_Register.Controllers
             if (!string.IsNullOrEmpty(request.User.Tier) && profileResp.User != null)
             {
                 profileResp.User.Tier = request.User.Tier;
-            } 
+            }
 
             var responseData = new CreateUserResponseData
             {
                 User = UserMapper.MapRlpToLbeUser(profileResp.User!)
-            }; 
+            };
             var resp = new ApiResponse
             {
                 Code = Codes.SUCCESSFUL,

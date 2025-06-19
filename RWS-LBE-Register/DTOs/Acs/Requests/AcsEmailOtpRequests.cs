@@ -38,6 +38,6 @@ namespace RWS_LBE_Register.DTOs.Acs.Requests
     public class RequestWithDrawAccountTemplateData
     {
         [JsonPropertyName("email")]
-        public string? Email { get; set; } 
+        public string? Email { get; set; }
     }
 }

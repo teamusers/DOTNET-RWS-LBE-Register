@@ -66,9 +66,9 @@ namespace RWS_LBE_Register.DTOs.User.Shared
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public UserProfileDto UserProfile { get; set; } = new();
 
-        [JsonPropertyName("gr_profile")] 
+        [JsonPropertyName("gr_profile")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public GrProfileDto? GrProfile { get; set; } 
+        public GrProfileDto? GrProfile { get; set; }
 
         [JsonPropertyName("employee_id")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

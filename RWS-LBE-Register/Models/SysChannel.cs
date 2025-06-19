@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -10,10 +8,10 @@ namespace RWS_LBE_Register.Models
     public class SysChannel
     {
         [Key]
-        [Column("id", TypeName = "bigint")]           
+        [Column("id", TypeName = "bigint")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonPropertyName("id")]
-        public long Id { get; set; }                   
+        public long Id { get; set; }
 
         [Column("app_id")]
         [Required]
@@ -29,7 +27,7 @@ namespace RWS_LBE_Register.Models
         [Column("status")]
         [Required]
         [JsonPropertyName("status")]
-        public string? Status { get; set; } 
+        public string? Status { get; set; }
 
         [Column("sig_method")]
         [MaxLength(255)]

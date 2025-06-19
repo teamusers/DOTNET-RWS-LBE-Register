@@ -1,10 +1,7 @@
 ﻿using RWS_LBE_Register.Common;
-using RWS_LBE_Register.Services.Interfaces;
-using RWS_LBE_Register.DTOs.User.Shared;
 using RWS_LBE_Register.DTOs.Rlp.Requests;
-using RWS_LBE_Register.DTOs.Rlp.Responses;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+using RWS_LBE_Register.DTOs.User.Shared;
+using RWS_LBE_Register.Services.Interfaces;
 
 namespace RWS_LBE_Register.Services.Implementations
 {

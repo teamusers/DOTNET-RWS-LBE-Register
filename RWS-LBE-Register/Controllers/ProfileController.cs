@@ -1,21 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using RWS_LBE_Register.Common;
 using RWS_LBE_Register.DTOs.Acs.Requests;
 using RWS_LBE_Register.DTOs.Requests;
 using RWS_LBE_Register.DTOs.Responses;
 using RWS_LBE_Register.DTOs.Rlp.Requests;
-using RWS_LBE_Register.DTOs.Rlp.Responses;
-using RWS_LBE_Register.Models;
-using RWS_LBE_Register.Services;
-using RWS_LBE_Register.Services.Interfaces;
-using RWS_LBE_Register.Helpers;
-using System.Net;
-using System.Text.Json.Serialization;
-using RWS_LBE_Register.Services.Implementations;
-using Azure.Core;
-using RWS_LBE_Register.DTOs.User.Responses;
 using RWS_LBE_Register.DTOs.User.Shared;
-using static System.Net.WebRequestMethods;
+using RWS_LBE_Register.Services;
+using RWS_LBE_Register.Services.Implementations;
+using RWS_LBE_Register.Services.Interfaces;
 
 namespace RWS_LBE_Register.Controllers
 {
@@ -41,7 +34,7 @@ namespace RWS_LBE_Register.Controllers
             _acsService = acsService;
         }
 
-        [HttpGet("{external_id}")] 
+        [HttpGet("{external_id}")]
         public async Task<IActionResult> GetUserProfile(string external_id)
         {
             var httpClient = _httpClientFactory.CreateClient();
@@ -50,13 +43,13 @@ namespace RWS_LBE_Register.Controllers
             if (error != null)
             {
                 var errorResponse = _rlpService.HandleRlpError(raw);
-                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse); 
+                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse);
             }
 
             if (profileResp == null)
                 return StatusCode((int)HttpStatusCode.InternalServerError,
                     ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "RLP get profile failed"));
-             
+
             var responseData = new GetUserProfileResponse
             {
                 User = UserMapper.MapRlpToLbeUser(profileResp.User!)
@@ -87,7 +80,7 @@ namespace RWS_LBE_Register.Controllers
                 && cd.Issg.HasValue && cd.LastUpdated.HasValue
                 ))
             {
-                
+
                 var car = req.User.UserProfile.CarDetail[0];
                 //UnmapCarDetail for steal car plate number.
                 await _userService.UnmapCarDetailExternalIdAsync(HttpContext, httpClient, car.CarPlate!);
@@ -143,7 +136,7 @@ namespace RWS_LBE_Register.Controllers
                 Message = "update successful",
                 Data = responseData
             };
-            return Ok(resp); 
+            return Ok(resp);
         }
 
         [HttpPut("archive/{external_id}")]
@@ -186,7 +179,7 @@ namespace RWS_LBE_Register.Controllers
                         ActiveStatus = "0",
                         MarketPrefPush = false,
                         MarketPrefEmail = false,
-                        MarketPrefMobile = false 
+                        MarketPrefMobile = false
                     }
                 }
             };
@@ -220,8 +213,8 @@ namespace RWS_LBE_Register.Controllers
                 Subject = "Account Withdrawal Confirmation",
                 Data = new RequestWithDrawAccountTemplateData
                 {
-                    Email = email 
-                } 
+                    Email = email
+                }
             };
 
             var sendResult = await _acsService.SendEmailByTemplateAsync("request_email_otp", acsRequest);
@@ -242,8 +235,8 @@ namespace RWS_LBE_Register.Controllers
                 Message = "withdraw successful",
                 Data = responseData
             };
-            return Ok(resp); 
-        } 
+            return Ok(resp);
+        }
 
         [HttpPost("rlp-id")]
         public async Task<IActionResult> GetUserIdExtensions([FromBody] GetUserIdExtensions request)
@@ -265,7 +258,7 @@ namespace RWS_LBE_Register.Controllers
             if (idExtensions == null)
                 return StatusCode((int)HttpStatusCode.InternalServerError,
                     ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "Unable to retrieve user extensions"));
-            
+
             var resp = new ApiResponse
             {
                 Code = Codes.SUCCESSFUL,
@@ -275,8 +268,8 @@ namespace RWS_LBE_Register.Controllers
                     RlpId = idExtensions.RlpId
                 }
             };
-            return Ok(resp); 
-        } 
+            return Ok(resp);
+        }
 
 
     }

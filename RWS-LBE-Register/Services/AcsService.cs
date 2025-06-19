@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using RWS_LBE_Register.Common;
-using RWS_LBE_Register.DTOs.Acs.Requests; 
+using RWS_LBE_Register.DTOs.Acs.Requests;
 using RWS_LBE_Register.Services.Interfaces;
 
 namespace RWS_LBE_Register.Services
@@ -72,7 +72,7 @@ namespace RWS_LBE_Register.Services
                 if (string.IsNullOrEmpty(token))
                     return ResponseTemplate.InternalErrorResponse();
 
-                var url = $"{_settings.Host}{string.Format(AcsSendEmailByTemplateUrl, templateName)}"; 
+                var url = $"{_settings.Host}{string.Format(AcsSendEmailByTemplateUrl, templateName)}";
 
                 using var request = new HttpRequestMessage(HttpMethod.Post, url)
                 {

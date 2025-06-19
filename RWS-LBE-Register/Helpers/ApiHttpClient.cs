@@ -11,7 +11,7 @@ namespace RWS_LBE_Register.Helpers
         Task<T?> DoApiRequestAsync<T>(ApiRequestOptions opts);
 
     }
-    
+
     public class ApiHttpClient : IApiHttpClient
     {
         private readonly HttpClient _httpClient;
