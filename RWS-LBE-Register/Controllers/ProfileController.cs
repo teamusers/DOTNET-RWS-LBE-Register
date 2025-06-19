@@ -269,7 +269,7 @@ namespace RWS_LBE_Register.Controllers
             var resp = new ApiResponse
             {
                 Code = Codes.SUCCESSFUL,
-                Message = "withdraw successful",
+                Message = "user found",
                 Data = new GetUserIdExtensionsResponseData
                 {
                     RlpId = idExtensions.RlpId
