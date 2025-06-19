@@ -6,15 +6,19 @@ namespace RWS_LBE_Register.DTOs.User.Shared
     public class PhoneNumberDto
     {
         [JsonPropertyName("phone_number")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? PhoneNumber { get; set; }
 
         [JsonPropertyName("phone_type")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? PhoneType { get; set; }
 
         [JsonPropertyName("preference_flags")]
-        public List<string> PreferenceFlags { get; set; } = new();
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<string>? PreferenceFlags { get; set; } 
 
         [JsonPropertyName("verified_ownership")]
-        public bool VerifiedOwnership { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public bool? VerifiedOwnership { get; set; }
     }
 }

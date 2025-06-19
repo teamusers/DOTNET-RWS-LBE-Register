@@ -34,4 +34,10 @@ namespace RWS_LBE_Register.DTOs.Acs.Requests
         [JsonPropertyName("registerLink")]
         public string? RegisterLink { get; set; }
     }
+
+    public class RequestWithDrawAccountTemplateData
+    {
+        [JsonPropertyName("email")]
+        public string? Email { get; set; } 
+    }
 }

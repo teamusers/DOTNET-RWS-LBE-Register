@@ -11,6 +11,8 @@ using RWS_LBE_Register.Services.Interfaces;
 using RWS_LBE_Register.Helpers; 
 using System.Net;
 using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Linq;
+using RWS_LBE_Register.Services.Implementations;
 
 namespace RWS_LBE_Register.Controllers
 {
@@ -18,6 +20,7 @@ namespace RWS_LBE_Register.Controllers
     [Route("api/v1/[controller]")]
     public class UserController : ControllerBase
     {
+        private readonly ILogger<UserService> _logger;
         private readonly IOtpService _otpService;
         private readonly CiamService _ciamService;
         private readonly AcsService _acsService;
@@ -27,6 +30,7 @@ namespace RWS_LBE_Register.Controllers
         private readonly IRlpService _rlpService;
 
         public UserController(
+            ILogger<UserService> logger,
             IHttpClientFactory httpClientFactory,
             IOtpService otpService,
             CiamService ciamService,
@@ -35,6 +39,7 @@ namespace RWS_LBE_Register.Controllers
             RlpNumberingHelper rlpHelper,
             IRlpService rlpService)
         {
+            _logger = logger;
             _httpClientFactory = httpClientFactory;
             _otpService = otpService;
             _ciamService = ciamService;
@@ -79,8 +84,10 @@ namespace RWS_LBE_Register.Controllers
 
             var sendResult = await _acsService.SendEmailByTemplateAsync("request_email_otp", payload);
             if (sendResult.Code != Codes.SUCCESSFUL)
-                return BadRequest(ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "failed to send OTP email"));
-
+            {
+                _logger.LogError("Failed to send OTP email. Code: {Code}, Message: {Message}",
+                    sendResult.Code, sendResult.Message);
+            } 
             return Ok(ResponseTemplate.GenericSuccessResponse(otp));
         }
 
@@ -157,16 +164,16 @@ namespace RWS_LBE_Register.Controllers
             var (initResp, initRaw, initErr) = await _rlpService.CreateRlpProfileAsync(httpClient, initialProfileReq);
             if (initErr != null)
             {
-                _rlpService.HandleRlpError(initRaw);
-                return StatusCode((int)HttpStatusCode.InternalServerError, ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "Initial RLP profile creation failed"));
+                var errorResponse = _rlpService.HandleRlpError(initRaw);
+                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse); 
             }
 
             var updateReq = new UserProfileRequest { User = rlpUser };
             var (profileResp, updateRaw, updateErr) = await _rlpService.UpdateRlpProfileAsync(httpClient, newRlp.RLP_ID, updateReq);
             if (updateErr != null)
             {
-                _rlpService.HandleRlpError(updateRaw);
-                return StatusCode((int)HttpStatusCode.InternalServerError, ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "RLP profile update failed"));
+                var errorResponse = _rlpService.HandleRlpError(updateRaw);
+                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse);
             }
 
             var tierReq = new UserTierUpdateEventRequest
@@ -179,8 +186,8 @@ namespace RWS_LBE_Register.Controllers
             var (tierResp, tierRaw, tierErr) = await _rlpService.UpdateUserTierAsync(httpClient, tierReq);
             if (tierErr != null)
             {
-                _rlpService.HandleRlpError(tierRaw);
-                return StatusCode((int)HttpStatusCode.InternalServerError, ResponseTemplate.DefaultResponse(Codes.INTERNAL_ERROR, "User tier update failed"));
+                var errorResponse = _rlpService.HandleRlpError(tierRaw);
+                return StatusCode((int)HttpStatusCode.InternalServerError, errorResponse);
             }
 
             if (profileResp == null)

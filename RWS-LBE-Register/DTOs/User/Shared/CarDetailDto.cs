@@ -1,4 +1,4 @@
-﻿using System;
+﻿using RWS_LBE_Register.Helpers;
 using System.Text.Json.Serialization;
 
 namespace RWS_LBE_Register.DTOs.User.Shared
@@ -6,15 +6,20 @@ namespace RWS_LBE_Register.DTOs.User.Shared
     public class CarDetailDto
     {
         [JsonPropertyName("car_plate")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? CarPlate { get; set; }
 
         [JsonPropertyName("iu_number")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? IuNumber { get; set; }
 
-        [JsonPropertyName("is_sg")]
+        [JsonPropertyName("issg")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public bool? Issg { get; set; }
 
         [JsonPropertyName("last_updated")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DateTime? LastUpdated { get; set; }
     }
 }

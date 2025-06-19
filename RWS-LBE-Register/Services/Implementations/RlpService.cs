@@ -114,8 +114,14 @@ namespace RWS_LBE_Register.Services.Implementations
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                    return (default, responseBody, null);
-
+                {
+                    var httpError = new HttpRequestException(
+                        $"RLP API returned non-success status code: {(int)response.StatusCode} {response.ReasonPhrase}",
+                        null,
+                        response.StatusCode
+                    );
+                    return (default, responseBody, httpError);
+                }
                 var result = JsonSerializer.Deserialize<TResponse>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 return (result, responseBody, null);
             }

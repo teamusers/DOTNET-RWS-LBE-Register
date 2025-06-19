@@ -5,6 +5,7 @@ namespace RWS_LBE_Register.Services.Interfaces
     public interface IUserService
     {
         string? AssignTier(UserDto user, string signUpType);
-        string? GrTierMatching(string grClass);
+        string? GrTierMatching(string grClass); 
+        Task UnmapCarDetailExternalIdAsync(HttpContext httpContext, HttpClient httpClient, string externalId);
     }
 }
