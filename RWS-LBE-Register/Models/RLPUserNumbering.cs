@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RWS_LBE_Register.Models
 {
-    [Table("RLPUserNumberings")] // Optional: if you want to explicitly set table name
+    [Table("RLPUserNumbering")] // Optional: if you want to explicitly set table name
     public class RLPUserNumbering
     {
         [Key]
