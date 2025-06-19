@@ -91,8 +91,8 @@ namespace RWS_LBE_Register.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("month");
 
-                    b.Property<int>("RLPIDEndingNO")
-                        .HasColumnType("int")
+                    b.Property<long>("RLPIDEndingNO")
+                        .HasColumnType("bigint")
                         .HasColumnName("rlp_id_ending_no");
 
                     b.Property<string>("RLP_ID")
@@ -113,7 +113,7 @@ namespace RWS_LBE_Register.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RLPUserNumberings");
+                    b.ToTable("rlp_user_numberings");
                 });
 
             modelBuilder.Entity("RWS_LBE_Register.Models.SysChannel", b =>

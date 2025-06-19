@@ -12,8 +12,8 @@ using RWS_LBE_Register.Data;
 namespace RWS_LBE_Register.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250616020931_AddMissingChanges")]
-    partial class AddMissingChanges
+    [Migration("20250619134855_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,47 @@ namespace RWS_LBE_Register.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("audit_logs");
+                });
+
+            modelBuilder.Entity("RWS_LBE_Register.Models.RLPUserNumbering", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("Day")
+                        .HasColumnType("bigint")
+                        .HasColumnName("day");
+
+                    b.Property<long>("Month")
+                        .HasColumnType("bigint")
+                        .HasColumnName("month");
+
+                    b.Property<long>("RLPIDEndingNO")
+                        .HasColumnType("bigint")
+                        .HasColumnName("rlp_id_ending_no");
+
+                    b.Property<string>("RLP_ID")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("rlp_id");
+
+                    b.Property<string>("RLP_NO")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("rlp_no");
+
+                    b.Property<long>("Year")
+                        .HasColumnType("bigint")
+                        .HasColumnName("year");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("rlp_user_numberings");
                 });
 
             modelBuilder.Entity("RWS_LBE_Register.Models.SysChannel", b =>

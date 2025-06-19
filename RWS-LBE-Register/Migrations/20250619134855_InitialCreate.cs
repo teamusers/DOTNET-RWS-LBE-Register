@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,7 +12,7 @@ namespace RWS_LBE_Register.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AuditLogs",
+                name: "audit_logs",
                 columns: table => new
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
@@ -29,7 +30,25 @@ namespace RWS_LBE_Register.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditLogs", x => x.ID);
+                    table.PrimaryKey("PK_audit_logs", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "rlp_user_numberings",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    year = table.Column<long>(type: "bigint", nullable: false),
+                    month = table.Column<long>(type: "bigint", nullable: false),
+                    day = table.Column<long>(type: "bigint", nullable: false),
+                    rlp_id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    rlp_no = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    rlp_id_ending_no = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_rlp_user_numberings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,7 +74,10 @@ namespace RWS_LBE_Register.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AuditLogs");
+                name: "audit_logs");
+
+            migrationBuilder.DropTable(
+                name: "rlp_user_numberings");
 
             migrationBuilder.DropTable(
                 name: "sys_channel");

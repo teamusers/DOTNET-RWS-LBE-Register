@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RWS_LBE_Register.Models
 {
-    [Table("RLPUserNumbering")] // Optional: if you want to explicitly set table name
+    [Table("rlp_user_numberings")] // Optional: if you want to explicitly set table name
     public class RLPUserNumbering
     {
         [Key]
@@ -28,6 +28,6 @@ namespace RWS_LBE_Register.Models
         public string RLP_NO { get; set; } = string.Empty;
 
         [Column("rlp_id_ending_no")]
-        public int RLPIDEndingNO { get; set; }
+        public long RLPIDEndingNO { get; set; }
     }
 }
