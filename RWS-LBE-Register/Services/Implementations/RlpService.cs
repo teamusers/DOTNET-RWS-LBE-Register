@@ -1,11 +1,12 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+﻿using System.Net; 
 using Microsoft.Extensions.Options;
 using RWS_LBE_Register.Common;
 using RWS_LBE_Register.DTOs.Configurations;
 using RWS_LBE_Register.DTOs.Rlp.Requests;
 using RWS_LBE_Register.DTOs.Rlp.Responses;
+using RWS_LBE_Register.DTOs.Shared;
+using RWS_LBE_Register.Exceptions;
+using RWS_LBE_Register.Helpers;
 using RWS_LBE_Register.Services.Interfaces;
 
 namespace RWS_LBE_Register.Services.Implementations
@@ -13,36 +14,122 @@ namespace RWS_LBE_Register.Services.Implementations
     public class RlpService : IRlpService
     {
         private readonly RlpApiConfig _settings;
-        public string GetRetailerId() => _settings.RetailerId;
+        private readonly IApiHttpClient _apiHttpClient;
 
-        public RlpService(IOptions<RlpApiConfig> settings)
+        public RlpService(IOptions<RlpApiConfig> settings, IApiHttpClient apiHttpClient)
         {
             _settings = settings.Value;
+            _apiHttpClient = apiHttpClient;
         }
+
+        public string GetRetailerId() => _settings.RetailerId;
 
         public async Task<(GetUserResponse?, string?, Exception?)> CreateRlpProfileAsync(HttpClient client, UserProfileRequest payload)
         {
-            var url = BuildProfileUrl(_settings.Core.CreateProfileUrl);
-            return await SendRlpApiRequestAsync<GetUserResponse>(client, HttpMethod.Post, url, payload, _settings.Core.ApiKey, _settings.Core.ApiSecret);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(_settings, _settings.Core.CreateProfileUrl, null, null);
+
+            try
+            {
+                var result = await _apiHttpClient.DoApiRequestAsync<GetUserResponse>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Post,
+                    Body = payload,
+                    BasicAuth = basicAuth,
+                    ExpectedStatus = HttpStatusCode.OK
+                });
+
+                return (result, null, null);
+            }
+            catch (ExternalApiException ex)
+            {
+                return (default, ex.RawResponse, ex);
+            }
+            catch (Exception ex)
+            {
+                return (default, null, ex);
+            }
         }
 
         public async Task<(GetUserResponse?, string?, Exception?)> UpdateRlpProfileAsync(HttpClient client, string externalId, UserProfileRequest payload)
         {
-            var url = BuildProfileUrl(_settings.Core.ProfileUrl, externalId);
-            return await SendRlpApiRequestAsync<GetUserResponse>(client, HttpMethod.Put, url, payload, _settings.Core.ApiKey, _settings.Core.ApiSecret);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(_settings, _settings.Core.ProfileUrl, externalId, null);
+
+            try
+            {
+                var result = await _apiHttpClient.DoApiRequestAsync<GetUserResponse>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Put,
+                    Body = payload,
+                    BasicAuth = basicAuth,
+                    ExpectedStatus = HttpStatusCode.OK
+                });
+
+                return (result, null, null);
+            }
+            catch (ExternalApiException ex)
+            {
+                return (default, ex.RawResponse, ex);
+            }
+            catch (Exception ex)
+            {
+                return (default, null, ex);
+            }
         }
 
         public async Task<(GetUserResponse?, string?, Exception?)> GetRlpProfileAsync(HttpClient client, string externalId)
         {
             var query = "user[user_profile]=true&expand_incentives=true&show_identifiers=true";
-            var url = BuildProfileUrl(_settings.Core.ProfileUrl, externalId, query);
-            return await SendRlpApiRequestAsync<GetUserResponse>(client, HttpMethod.Get, url, null, _settings.Core.ApiKey, _settings.Core.ApiSecret);
+            var (basicAuth, url) = RlpHelper.BuildRlpCoreRequestInfo(_settings, _settings.Core.ProfileUrl, externalId, query);
+
+            try
+            {
+                var result = await _apiHttpClient.DoApiRequestAsync<GetUserResponse>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Get,
+                    BasicAuth = basicAuth,
+                    ExpectedStatus = HttpStatusCode.OK
+                });
+
+                return (result, null, null);
+            }
+            catch (ExternalApiException ex)
+            {
+                return (default, ex.RawResponse, ex);
+            }
+            catch (Exception ex)
+            {
+                return (default, null, ex);
+            }
         }
 
         public async Task<(object?, string?, Exception?)> UpdateUserTierAsync(HttpClient client, UserTierUpdateEventRequest payload)
         {
-            var url = $"{_settings.Offers.Host}{_settings.Offers.EventUrl}";
-            return await SendRlpApiRequestAsync<object>(client, HttpMethod.Post, url, payload, _settings.Offers.ApiKey, _settings.Offers.ApiSecret);
+            var (basicAuth, url) = RlpHelper.BuildRlpOffersRequestInfo(_settings, _settings.Offers.EventUrl, null, null);
+
+            try
+            {
+                var result = await _apiHttpClient.DoApiRequestAsync<object>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Post,
+                    Body = payload,
+                    BasicAuth = basicAuth,
+                    ExpectedStatus = HttpStatusCode.OK
+                });
+
+                return (result, null, null);
+            }
+            catch (ExternalApiException ex)
+            {
+                return (default, ex.RawResponse, ex);
+            }
+            catch (Exception ex)
+            {
+                return (default, null, ex);
+            }
         }
 
         public string GetUserTierEventName(string tier)
@@ -79,54 +166,6 @@ namespace RWS_LBE_Register.Services.Implementations
                 RlpErrorCodes.UserNotFound => ResponseTemplate.ExistingUserNotFoundErrorResponse(),
                 _ => ResponseTemplate.UnmappedRLPErrorResponse(errResp)
             };
-        }
-
-        private string BuildProfileUrl(string basePath, string externalId = "", string queryParams = "")
-        {
-            var url = basePath.Replace(":api_key", _settings.Core.ApiKey);
-            if (!string.IsNullOrEmpty(externalId))
-                url = $"{url}/{externalId}";
-
-            if (!string.IsNullOrEmpty(queryParams))
-                url = $"{url}?{queryParams}";
-
-            return $"{_settings.Core.Host.TrimEnd('/')}{url}";
-        }
-
-        private async Task<(TResponse?, string?, Exception?)> SendRlpApiRequestAsync<TResponse>(HttpClient client, HttpMethod method, string url, object? payload, string username, string password)
-        {
-            try
-            {
-                var request = new HttpRequestMessage(method, url);
-
-                if (payload != null)
-                {
-                    var json = JsonSerializer.Serialize(payload);
-                    request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-                }
-
-                var byteArray = Encoding.ASCII.GetBytes($"{username}:{password}");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-                var response = await client.SendAsync(request);
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var httpError = new HttpRequestException(
-                        $"RLP API returned non-success status code: {(int)response.StatusCode} {response.ReasonPhrase}",
-                        null,
-                        response.StatusCode
-                    );
-                    return (default, responseBody, httpError);
-                }
-                var result = JsonSerializer.Deserialize<TResponse>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                return (result, responseBody, null);
-            }
-            catch (Exception ex)
-            {
-                return (default, null, ex);
-            }
         }
     }
 }

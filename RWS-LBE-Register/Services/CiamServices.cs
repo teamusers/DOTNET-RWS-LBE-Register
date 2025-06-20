@@ -6,6 +6,8 @@ using System.Web;
 using Microsoft.Extensions.Options;
 using RWS_LBE_Register.DTOs.Ciam.CiamResponses;
 using RWS_LBE_Register.DTOs.Ciam.Requests;
+using RWS_LBE_Register.DTOs.Shared;
+using RWS_LBE_Register.Helpers;
 
 namespace RWS_LBE_Register.Services
 {
@@ -24,33 +26,40 @@ namespace RWS_LBE_Register.Services
     {
         private readonly HttpClient _client;
         private readonly CiamSettings _settings;
+        private readonly IApiHttpClient _apiHttpClient;
+
         public string DefaultIssuer => _settings.DefaultIssuer;
         public string UserIdLinkExtensionKey => _settings.UserIdLinkExtensionKey;
 
-        public CiamService(HttpClient client, IOptions<CiamSettings> settings)
+        public CiamService(HttpClient client, IOptions<CiamSettings> settings, IApiHttpClient apiHttpClient)
         {
             _client = client;
             _settings = settings.Value;
+            _apiHttpClient = apiHttpClient;
         }
 
         private async Task<string> GetAccessTokenAsync()
         {
             var tokenUrl = $"{_settings.AuthHost.TrimEnd('/')}/{_settings.TenantID}/oauth2/v2.0/token";
 
-            var content = new FormUrlEncodedContent(new Dictionary<string, string>
+            var content = new Dictionary<string, string>
             {
                 { "grant_type", "client_credentials" },
                 { "client_id", _settings.ClientID },
                 { "client_secret", _settings.ClientSecret },
                 { "scope", "https://graph.microsoft.com/.default" }
+            };
+
+            var tokenResp = await _apiHttpClient.DoApiRequestAsync<TokenResponse>(new ApiRequestOptions
+            {
+                Url = tokenUrl,
+                Method = HttpMethod.Post,
+                ContentType = "application/x-www-form-urlencoded",
+                Body = content,
+                ExpectedStatus = HttpStatusCode.OK
             });
 
-            var response = await _client.PostAsync(tokenUrl, content);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(json);
-            return tokenResponse?.AccessToken ?? throw new Exception("Unable to retrieve access token.");
+            return tokenResp?.AccessToken ?? throw new Exception("Unable to retrieve access token.");
         }
 
         public async Task<GraphUserCollection?> GetUserByEmailAsync(string email)
@@ -58,7 +67,14 @@ namespace RWS_LBE_Register.Services
             var token = await GetAccessTokenAsync();
             var filter = HttpUtility.UrlEncode($"mail eq '{email}'");
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users?$filter={filter}";
-            return await GetAsync<GraphUserCollection>(url, token);
+
+            return await _apiHttpClient.DoApiRequestAsync<GraphUserCollection>(new ApiRequestOptions
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                BearerToken = token,
+                ExpectedStatus = HttpStatusCode.OK
+            });
         }
 
         public async Task<GraphUserCollection?> GetUserByGrIdAsync(string grId)
@@ -66,14 +82,29 @@ namespace RWS_LBE_Register.Services
             var token = await GetAccessTokenAsync();
             var filter = HttpUtility.UrlEncode($"{_settings.UserIdLinkExtensionKey}/grid eq '{grId}'");
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users?$filter={filter}";
-            return await GetAsync<GraphUserCollection>(url, token);
+
+            return await _apiHttpClient.DoApiRequestAsync<GraphUserCollection>(new ApiRequestOptions
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                BearerToken = token,
+                ExpectedStatus = HttpStatusCode.OK
+            });
         }
 
         public async Task<GraphCreateUserResponse?> RegisterUserAsync(GraphCreateUserRequest payload)
         {
             var token = await GetAccessTokenAsync();
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users";
-            return await PostAsync<GraphCreateUserResponse>(url, payload, token);
+
+            return await _apiHttpClient.DoApiRequestAsync<GraphCreateUserResponse>(new ApiRequestOptions
+            {
+                Url = url,
+                Method = HttpMethod.Post,
+                Body = payload,
+                BearerToken = token,
+                ExpectedStatus = HttpStatusCode.Created
+            });
         }
 
         public async Task<bool> PatchUserAsync(string userId, object payload)
@@ -81,14 +112,23 @@ namespace RWS_LBE_Register.Services
             var token = await GetAccessTokenAsync();
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users/{userId}";
 
-            var req = new HttpRequestMessage(HttpMethod.Patch, url)
+            try
             {
-                Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
-            };
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                await _apiHttpClient.DoApiRequestAsync<object>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Patch,
+                    Body = payload,
+                    BearerToken = token,
+                    ExpectedStatus = HttpStatusCode.NoContent
+                });
 
-            var res = await _client.SendAsync(req);
-            return res.StatusCode == HttpStatusCode.NoContent;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<GraphUserIdExtensionValues?> GetUserSchemaExtensionsAsync(string userId)
@@ -96,7 +136,14 @@ namespace RWS_LBE_Register.Services
             var token = await GetAccessTokenAsync();
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users/{userId}?$select={_settings.UserIdLinkExtensionKey}";
 
-            var dict = await GetAsync<Dictionary<string, JsonElement>>(url, token);
+            var dict = await _apiHttpClient.DoApiRequestAsync<Dictionary<string, JsonElement>>(new ApiRequestOptions
+            {
+                Url = url,
+                Method = HttpMethod.Get,
+                BearerToken = token,
+                ExpectedStatus = HttpStatusCode.OK
+            });
+
             if (dict != null && dict.TryGetValue(_settings.UserIdLinkExtensionKey, out var extVal))
             {
                 return extVal.Deserialize<GraphUserIdExtensionValues>();
@@ -110,38 +157,22 @@ namespace RWS_LBE_Register.Services
             var token = await GetAccessTokenAsync();
             var url = $"{_settings.Host.TrimEnd('/')}/v1.0/users/{userId}";
 
-            var req = new HttpRequestMessage(HttpMethod.Delete, url);
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var res = await _client.SendAsync(req);
-            return res.StatusCode == HttpStatusCode.NoContent;
-        }
-
-        private async Task<T?> GetAsync<T>(string url, string token)
-        {
-            var req = new HttpRequestMessage(HttpMethod.Get, url);
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-            var res = await _client.SendAsync(req);
-            if (!res.IsSuccessStatusCode) return default;
-
-            var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json);
-        }
-
-        private async Task<T?> PostAsync<T>(string url, object payload, string token)
-        {
-            var req = new HttpRequestMessage(HttpMethod.Post, url)
+            try
             {
-                Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
-            };
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                await _apiHttpClient.DoApiRequestAsync<object>(new ApiRequestOptions
+                {
+                    Url = url,
+                    Method = HttpMethod.Delete,
+                    BearerToken = token,
+                    ExpectedStatus = HttpStatusCode.NoContent
+                });
 
-            var res = await _client.SendAsync(req);
-            if (!res.IsSuccessStatusCode) return default;
-
-            var json = await res.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

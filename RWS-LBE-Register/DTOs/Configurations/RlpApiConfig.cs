@@ -24,7 +24,7 @@
         public string ApiKey { get; set; } = string.Empty;
         public string ApiSecret { get; set; } = string.Empty;
         public string CreateProfileUrl { get; set; } = "/priv/v1/apps/:api_key/users";
-        public string ProfileUrl { get; set; } = "/priv/v1/apps/:api_key/external/users";
+        public string ProfileUrl { get; set; } = "/priv/v1/apps/:api_key/external/users/:external_id";
     }
 
     public class RlpOffersConfig

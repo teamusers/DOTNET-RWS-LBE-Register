@@ -35,11 +35,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-
+builder.Services.AddHttpClient<IApiHttpClient, ApiHttpClient>();
 builder.Services.AddScoped<IOtpService, OTPService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRlpService, RlpService>();
+
 builder.Services.AddScoped<RlpNumberingHelper>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
